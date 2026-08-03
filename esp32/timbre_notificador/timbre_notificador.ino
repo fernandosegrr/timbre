@@ -35,9 +35,16 @@ const int   HTTP_TIMEOUT_MS = 5000; // Timeout corto: si el server no responde, 
 // (que cuestan dinero) o spam de notificaciones push.
 const char* DEVICE_SHARED_SECRET = "d0344fbdafc19d64daa1bddf78a08eb23fed301603f41d41";
 
-// ======================= Detección del timbre (VALIDADO - NO TOCAR) ========
+// ======================= Detección del timbre (VALIDADO - NO TOCAR la lógica) ====
 const int PIN_TIMBRE = 4;                     // GPIO4 / D4
-const unsigned long TIEMPO_SILENCIO_MS = 800;
+
+// Ajustado de 800 a 3000: con 800ms, un solo toque real generó 5 avisos
+// (el receptor inalámbrico pulsa la salida varias veces por timbrazo,
+// ~1.2-1.5s entre pulsos - probablemente el patrón de su campanita
+// "ding-dong"). 3000ms cubre esos huecos con margen para que todo el
+// grupo de pulsos cuente como un solo timbrazo. La lógica de detección
+// en sí (el algoritmo de abajo) no cambió.
+const unsigned long TIEMPO_SILENCIO_MS = 3000;
 
 bool timbreActivo = false;
 unsigned long ultimaActividad = 0;
