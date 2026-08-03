@@ -30,6 +30,11 @@ const char* SERVER_URL = "https://postgres-timbre.d6cr6o.easypanel.host/api/timb
 const char* DEVICE_ID  = "esp32-timbre-01";
 const int   HTTP_TIMEOUT_MS = 5000; // Timeout corto: si el server no responde, no bloquear mucho
 
+// Debe ser IDÉNTICO a DEVICE_SHARED_SECRET en el .env del backend. Sin esto,
+// cualquiera que encuentre la URL podría disparar avisos de WhatsApp falsos
+// (que cuestan dinero) o spam de notificaciones push.
+const char* DEVICE_SHARED_SECRET = "cambia-esto-tambien";
+
 // ======================= Detección del timbre (VALIDADO - NO TOCAR) ========
 const int PIN_TIMBRE = 4;                     // GPIO4 / D4
 const unsigned long TIEMPO_SILENCIO_MS = 800;
@@ -112,6 +117,7 @@ void notificarTimbre() {
   HTTPClient http;
   http.begin(clienteSeguro, SERVER_URL);
   http.addHeader("Content-Type", "application/json");
+  http.addHeader("X-Device-Secret", DEVICE_SHARED_SECRET);
   http.setTimeout(HTTP_TIMEOUT_MS);
 
   String cuerpo = String("{\"event\":\"doorbell_ring\",\"device_id\":\"") + DEVICE_ID + "\"}";

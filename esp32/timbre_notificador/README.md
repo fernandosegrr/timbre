@@ -14,7 +14,10 @@ GPIO4 y notifica un servidor propio vía HTTP POST.
    si defines rutas distintas cuando lo despliegues. Los dominios
    `*.easypanel.host` son HTTPS-only, por eso el sketch usa
    `WiFiClientSecure` con `setInsecure()` en vez de HTTP plano.
-3. Abre `timbre_notificador.ino` con Arduino IDE, o inclúyelo en `src/`
+3. `DEVICE_SHARED_SECRET` debe ser idéntico a `DEVICE_SHARED_SECRET` en el
+   `.env` del backend (`backend/.env.example`). Es lo que evita que
+   cualquiera con la URL dispare avisos falsos.
+4. Abre `timbre_notificador.ino` con Arduino IDE, o inclúyelo en `src/`
    de un proyecto PlatformIO, y compila para una placa ESP32 DevKit.
 
 ## Qué hace
@@ -22,8 +25,9 @@ GPIO4 y notifica un servidor propio vía HTTP POST.
 - Detecta el timbre por GPIO4 (`INPUT_PULLDOWN`) — lógica ya validada,
   sin cambios.
 - Al detectarlo, envía un `POST` a `SERVER_URL` con `Content-Type:
-  application/json` y body `{"event": "doorbell_ring", "device_id":
-  "esp32-timbre-01"}`. El timestamp lo agrega el servidor al recibirlo.
+  application/json`, header `X-Device-Secret` y body `{"event":
+  "doorbell_ring", "device_id": "esp32-timbre-01"}`. El timestamp lo
+  agrega el servidor al recibirlo.
 - Si no hay WiFi o el POST falla (timeout de ~5s), lo reporta por Serial
   pero sigue funcionando: el detector nunca se bloquea ni se detiene.
 - Reintenta la conexión WiFi automáticamente en segundo plano si se

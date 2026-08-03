@@ -1,2 +1,6 @@
 # Credenciales (WiFi, tokens, etc.) - nunca se suben al repositorio
 secrets.h
+.env
+
+# Backend Node.js
+backend/node_modules/

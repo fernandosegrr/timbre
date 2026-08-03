@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Timbre</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/icon.svg" />
+  <meta name="theme-color" content="#0b0b0f" />
+  <style>
+    :root { color-scheme: dark; }
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; background: #0b0b0f; color: #e5e7eb; }
+    h1 { font-size: 1.4rem; }
+    section { margin-bottom: 2.5rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 0.4rem; border-bottom: 1px solid #27272a; }
+    button { cursor: pointer; }
+    form { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+    input { padding: 0.4rem; background: #18181b; border: 1px solid #3f3f46; color: #e5e7eb; border-radius: 4px; }
+    #estado-push { margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <h1>🔔 Timbre</h1>
+
+  <section>
+    <h2>Notificaciones en este dispositivo</h2>
+    <button id="boton-activar-push">Activar notificaciones</button>
+    <p id="estado-push"></p>
+  </section>
+
+  <section>
+    <h2>Números de WhatsApp</h2>
+    <table>
+      <thead><tr><th>Número</th><th>Etiqueta</th><th></th></tr></thead>
+      <tbody id="tabla-numeros"></tbody>
+    </table>
+    <form id="form-numero">
+      <input id="input-numero" placeholder="521XXXXXXXXXX" required />
+      <input id="input-etiqueta" placeholder="Etiqueta (opcional)" />
+      <button type="submit">Agregar</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Historial de timbrazos</h2>
+    <button id="boton-refrescar-historial">Refrescar</button>
+    <table>
+      <thead><tr><th>Fecha</th><th>Dispositivo</th></tr></thead>
+      <tbody id="tabla-historial"></tbody>
+    </table>
+  </section>
+
+  <script src="/app.js"></script>
+</body>
+</html>
