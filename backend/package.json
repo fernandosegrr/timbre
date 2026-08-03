@@ -5,7 +5,7 @@
   "description": "Backend del detector de timbre: recibe el aviso del ESP32, notifica por WhatsApp y push, y sirve el panel admin.",
   "type": "commonjs",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "scripts": {
     "start": "node src/index.js"
