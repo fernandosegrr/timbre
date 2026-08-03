@@ -50,12 +50,12 @@ router.post('/timbre', async (req, res) => {
 
   // Notificaciones en segundo plano, después de responder. Un fallo aquí
   // solo se loguea: nunca debe tumbar el endpoint ni el request del ESP32.
-  despacharNotificaciones().catch((err) => {
+  despacharNotificaciones(data.occurred_at).catch((err) => {
     console.error('Error inesperado despachando notificaciones:', err);
   });
 });
 
-async function despacharNotificaciones() {
+async function despacharNotificaciones(occurredAt) {
   const { data: numeros, error: errorNumeros } = await supabase
     .from('notification_numbers')
     .select('phone_number')
@@ -65,7 +65,7 @@ async function despacharNotificaciones() {
     console.error('Error al leer números de notificación:', errorNumeros);
   } else {
     for (const { phone_number: numero } of numeros || []) {
-      enviarPlantillaTimbre(numero).catch((err) => {
+      enviarPlantillaTimbre(numero, occurredAt).catch((err) => {
         console.error(`Error enviando WhatsApp a ${numero}:`, err.message || err);
       });
     }

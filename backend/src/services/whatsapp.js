@@ -3,13 +3,25 @@
 const WHATSAPP_API_VERSION = process.env.WHATSAPP_API_VERSION || 'v21.0';
 const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
-const WHATSAPP_TEMPLATE_NAME = process.env.WHATSAPP_TEMPLATE_NAME || 'timbre_alerta';
+const WHATSAPP_TEMPLATE_NAME = process.env.WHATSAPP_TEMPLATE_NAME || 'aviso_timbre';
 const WHATSAPP_TEMPLATE_LANG = process.env.WHATSAPP_TEMPLATE_LANG || 'es_MX';
+
+// Formatea la hora del timbrazo en zona horaria de México para rellenar
+// la variable {{1}} de la plantilla ("...a las {{1}}.").
+function formatearHora(occurredAt) {
+  const fecha = occurredAt ? new Date(occurredAt) : new Date();
+  return new Intl.DateTimeFormat('es-MX', {
+    timeZone: 'America/Mexico_City',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(fecha);
+}
 
 // Manda la plantilla aprobada de WhatsApp Cloud API a un número.
 // La plantilla debe existir y estar APROBADA por Meta de antemano
 // (ver scripts/crear-plantilla-whatsapp.js).
-async function enviarPlantillaTimbre(numero) {
+async function enviarPlantillaTimbre(numero, occurredAt) {
   if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_PHONE_NUMBER_ID) {
     throw new Error('Faltan WHATSAPP_ACCESS_TOKEN o WHATSAPP_PHONE_NUMBER_ID.');
   }
@@ -29,6 +41,12 @@ async function enviarPlantillaTimbre(numero) {
       template: {
         name: WHATSAPP_TEMPLATE_NAME,
         language: { code: WHATSAPP_TEMPLATE_LANG },
+        components: [
+          {
+            type: 'body',
+            parameters: [{ type: 'text', text: formatearHora(occurredAt) }],
+          },
+        ],
       },
     }),
   });
