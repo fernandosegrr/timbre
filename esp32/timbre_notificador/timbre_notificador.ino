@@ -33,7 +33,7 @@ const int   HTTP_TIMEOUT_MS = 5000; // Timeout corto: si el server no responde, 
 // Debe ser IDÉNTICO a DEVICE_SHARED_SECRET en el .env del backend. Sin esto,
 // cualquiera que encuentre la URL podría disparar avisos de WhatsApp falsos
 // (que cuestan dinero) o spam de notificaciones push.
-const char* DEVICE_SHARED_SECRET = "cambia-esto-tambien";
+const char* DEVICE_SHARED_SECRET = "d0344fbdafc19d64daa1bddf78a08eb23fed301603f41d41";
 
 // ======================= Detección del timbre (VALIDADO - NO TOCAR) ========
 const int PIN_TIMBRE = 4;                     // GPIO4 / D4
