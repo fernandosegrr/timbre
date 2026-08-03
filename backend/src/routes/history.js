@@ -3,6 +3,7 @@
 const express = require('express');
 const { supabase } = require('../db');
 const { requireBasicAuth } = require('../middleware/basicAuth');
+const { agregarUrlsFirmadas } = require('../services/fotos');
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ router.get('/history', requireBasicAuth, async (req, res) => {
 
   const { data, error } = await supabase
     .from('doorbell_events')
-    .select('id, device_id, occurred_at')
+    .select('id, device_id, occurred_at, photo_status, photo_path')
     .order('occurred_at', { ascending: false })
     .limit(limite);
 
@@ -20,7 +21,8 @@ router.get('/history', requireBasicAuth, async (req, res) => {
     return res.status(500).json({ error: 'No se pudo leer el historial.' });
   }
 
-  res.json({ events: data });
+  const eventos = await agregarUrlsFirmadas(data);
+  res.json({ events: eventos });
 });
 
 module.exports = router;

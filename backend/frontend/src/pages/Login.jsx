@@ -31,7 +31,6 @@ export default function Login({ onSuccess }) {
       className="pantalla-centrada"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
       transition={{ duration: 0.35 }}
     >
       <motion.form

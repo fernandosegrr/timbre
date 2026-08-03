@@ -29,3 +29,24 @@ create table if not exists push_subscriptions (
 alter table doorbell_events enable row level security;
 alter table notification_numbers enable row level security;
 alter table push_subscriptions enable row level security;
+
+-- ---------------------------------------------------------------
+-- Migración: foto del timbrazo (relay Termux + DVR local vía RTSP).
+-- Seguro correr esta sección de nuevo, "add column if not exists" no
+-- falla si ya se aplicó antes.
+-- ---------------------------------------------------------------
+alter table doorbell_events
+  add column if not exists photo_status text not null default 'pendiente',
+  add column if not exists photo_path text;
+
+alter table doorbell_events drop constraint if exists doorbell_events_photo_status_check;
+alter table doorbell_events
+  add constraint doorbell_events_photo_status_check
+  check (photo_status in ('pendiente', 'recibida', 'sin_foto'));
+
+-- Esto NO es SQL: además de correr lo de arriba, crea un bucket de
+-- Supabase Storage llamado "timbre-fotos", marcado como PRIVADO (sin
+-- "Public bucket"). El backend genera URLs firmadas y temporales para
+-- mostrar las fotos en el panel - así nunca quedan expuestas de forma
+-- pública y permanente (son fotos de quien esté parado en la puerta).
+-- Dashboard de Supabase > Storage > New bucket > "timbre-fotos" > Private.

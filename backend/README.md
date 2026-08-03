@@ -2,14 +2,17 @@
 
 Recibe el aviso HTTP del ESP32, lo guarda en Supabase, notifica por
 WhatsApp (Meta Cloud API) y por Web Push a los celulares que instalaron
-la PWA, y sirve un panel para administrar números y ver el historial.
+la PWA, recibe la foto que sube el relay de Termux, y sirve un panel para
+administrar números y ver el historial (con foto incluida).
 
 ## Configuración
 
 1. Copia `.env.example` como `.env` y llena los valores (ver comentarios
    de cada variable ahí mismo).
 2. Corre `sql/schema.sql` una vez en el SQL editor de tu proyecto de
-   Supabase (crea las 3 tablas que usa la app).
+   Supabase (crea las tablas, y si ya las tenías, agrega las columnas de
+   foto). También crea ahí el bucket de Storage `timbre-fotos` como
+   **privado** (instrucciones al final del mismo archivo).
 3. Genera las llaves VAPID, una sola vez, para Web Push:
    ```
    npx web-push generate-vapid-keys
@@ -62,3 +65,11 @@ generado (está en `.gitignore`), no se edita a mano.
 - Los íconos de la PWA (`frontend/public/icons/icon.svg`) son un
   placeholder simple. Para mejor soporte (sobre todo en iOS),
   reemplázalos más adelante por PNGs reales de 192x192 y 512x512.
+- Foto por timbrazo: `GET /api/timbre/pending-photo` y `POST
+  /api/timbre/foto` (mismo `DEVICE_SHARED_SECRET` que `/api/timbre`) las
+  usa el relay de [`../termux-relay`](../termux-relay), que corre en un
+  Android en la misma red que el DVR y sube la foto por RTSP+ffmpeg. Si
+  no llega ninguna en ~30s, el evento queda como "sin_foto" en vez de
+  esperar para siempre. Las fotos se guardan en el bucket privado
+  `timbre-fotos` de Supabase Storage; el panel las muestra con URLs
+  firmadas temporales (nunca públicas).

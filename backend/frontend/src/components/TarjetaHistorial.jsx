@@ -37,23 +37,35 @@ export default function TarjetaHistorial({ onUnauthorized }) {
             <tr>
               <th>Fecha</th>
               <th>Dispositivo</th>
+              <th>Foto</th>
             </tr>
           </thead>
           <tbody>
             {eventos === null && (
               <tr>
-                <td colSpan={2} className="texto-tenue">Cargando…</td>
+                <td colSpan={3} className="texto-tenue">Cargando…</td>
               </tr>
             )}
             {eventos?.length === 0 && (
               <tr>
-                <td colSpan={2} className="texto-tenue">Todavía no suena el timbre.</td>
+                <td colSpan={3} className="texto-tenue">Todavía no suena el timbre.</td>
               </tr>
             )}
             {eventos?.map((e) => (
               <tr key={e.id}>
                 <td>{new Date(e.occurred_at).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}</td>
                 <td>{e.device_id}</td>
+                <td>
+                  {e.photo_url ? (
+                    <a href={e.photo_url} target="_blank" rel="noreferrer">
+                      <img src={e.photo_url} alt="Foto del timbrazo" className="miniatura-foto" />
+                    </a>
+                  ) : (
+                    <span className="texto-tenue estado-foto">
+                      {e.photo_status === 'pendiente' ? 'Esperando…' : 'Sin foto'}
+                    </span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

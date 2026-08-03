@@ -264,6 +264,18 @@ th {
   font-weight: 500;
 }
 
+.miniatura-foto {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--borde);
+  display: block;
+}
+.estado-foto {
+  font-size: 0.8rem;
+}
+
 .form-inline {
   display: flex;
   gap: 0.5rem;

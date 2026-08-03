@@ -1,0 +1,5 @@
+# Los scripts de shell deben tener saltos de línea LF sí o sí (corren en
+# Termux/Linux) - sin esto, git en Windows podría guardarlos con CRLF
+# dependiendo de la configuración de cada quien, y un CRLF en el shebang
+# rompe la ejecución del script.
+*.sh text eol=lf
