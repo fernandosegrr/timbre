@@ -28,11 +28,17 @@ la PWA, y sirve un panel para administrar números y ver el historial.
 
 ## Correr localmente
 
+El panel admin es una app de React (en `frontend/`) que se compila a
+`public/`, la carpeta que el backend sirve como estática. Hay que
+compilarla antes de levantar el backend (o cada vez que cambies algo ahí):
+
 ```
+cd frontend && npm install && npm run build && cd ..
 npm install
 npm start
 ```
-Sirve en `http://localhost:3000` (o el `PORT` que definas).
+Sirve en `http://localhost:3000` (o el `PORT` que definas). `public/` es
+generado (está en `.gitignore`), no se edita a mano.
 
 ## Desplegar en EasyPanel
 
@@ -45,12 +51,14 @@ Sirve en `http://localhost:3000` (o el `PORT` que definas).
 
 ## Notas
 
-- El panel admin (`/`, números, historial) está protegido con HTTP Basic
-  Auth (`ADMIN_USER` / `ADMIN_PASSWORD`). El navegador pide esas
-  credenciales la primera vez que la página intenta leer datos.
+- El panel tiene una pantalla de login propia (no el popup nativo del
+  navegador). Por debajo sigue siendo HTTP Basic Auth: el login prueba
+  las credenciales contra `GET /api/auth/check` y, si son válidas, las
+  guarda en `sessionStorage` del navegador (se pierden al cerrar la
+  pestaña) para mandarlas en cada llamada a la API.
 - Activar notificaciones push es autoservicio: cualquiera que abra la
   página puede darle a "Activar notificaciones" sin necesitar las
   credenciales de admin.
-- Los íconos de la PWA (`public/icons/icon.svg`) son un placeholder
-  simple. Para mejor soporte (sobre todo en iOS), reemplázalos más
-  adelante por PNGs reales de 192x192 y 512x512.
+- Los íconos de la PWA (`frontend/public/icons/icon.svg`) son un
+  placeholder simple. Para mejor soporte (sobre todo en iOS),
+  reemplázalos más adelante por PNGs reales de 192x192 y 512x512.

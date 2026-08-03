@@ -4,3 +4,8 @@ secrets.h
 
 # Backend Node.js
 backend/node_modules/
+backend/frontend/node_modules/
+
+# public/ ahora es la salida del build de backend/frontend (Vite) - no se
+# versiona, se genera en el Dockerfile / con `npm run build`.
+backend/public/

@@ -9,6 +9,7 @@ const timbreRouter = require('./routes/timbre');
 const historyRouter = require('./routes/history');
 const numbersRouter = require('./routes/numbers');
 const pushRouter = require('./routes/push');
+const authRouter = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ app.use('/api', timbreRouter);
 app.use('/api', historyRouter);
 app.use('/api', numbersRouter);
 app.use('/api', pushRouter);
+app.use('/api', authRouter);
 
 // Panel admin + PWA (HTML/JS/manifest/service worker estáticos).
 app.use(express.static(path.join(__dirname, '..', 'public')));
