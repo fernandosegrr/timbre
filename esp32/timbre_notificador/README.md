@@ -8,10 +8,12 @@ GPIO4 y notifica un servidor propio vía HTTP POST.
 1. Copia `secrets.example.h` como `secrets.h` en esta misma carpeta y
    coloca ahí el SSID y password de la red WiFi real. `secrets.h` no se
    sube al repositorio (está en `.gitignore`).
-2. En `timbre_notificador.ino`, actualiza la constante `SERVER_URL` con
-   la URL real del backend (a desplegar en EasyPanel) cuando esté
-   disponible. Por ahora tiene un valor de ejemplo:
-   `http://TU_SERVIDOR/api/timbre`.
+2. `SERVER_URL` en `timbre_notificador.ino` ya apunta al host de EasyPanel
+   (`https://postgres-timbre.d6cr6o.easypanel.host/api/timbre`), pero ese
+   backend todavía no está construido (hoy responde 502). Ajusta el path
+   si defines rutas distintas cuando lo despliegues. Los dominios
+   `*.easypanel.host` son HTTPS-only, por eso el sketch usa
+   `WiFiClientSecure` con `setInsecure()` en vez de HTTP plano.
 3. Abre `timbre_notificador.ino` con Arduino IDE, o inclúyelo en `src/`
    de un proyecto PlatformIO, y compila para una placa ESP32 DevKit.
 

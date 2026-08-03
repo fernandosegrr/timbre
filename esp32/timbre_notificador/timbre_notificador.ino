@@ -14,12 +14,19 @@
 
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include "secrets.h"   // Define WIFI_SSID y WIFI_PASSWORD (no se sube a git)
 
 // ======================= Configuración del servidor =======================
-// URL del backend que recibe la notificación. Todavía no existe: es un
-// placeholder a reemplazar cuando el servicio esté desplegado en EasyPanel.
-const char* SERVER_URL = "http://TU_SERVIDOR/api/timbre";
+// URL del backend en EasyPanel. TODAVÍA NO ESTÁ CONSTRUIDO (por eso hoy
+// responde 502): esta es la dirección donde va a vivir una vez desplegado.
+// El path "/api/timbre" es un supuesto razonable, ajústalo cuando definas
+// las rutas reales del backend.
+//
+// Nota: los dominios *.easypanel.host se sirven solo por HTTPS (TLS en su
+// proxy), no por HTTP plano como se planeó originalmente. Por eso
+// notificarTimbre() usa WiFiClientSecure más abajo.
+const char* SERVER_URL = "https://postgres-timbre.d6cr6o.easypanel.host/api/timbre";
 const char* DEVICE_ID  = "esp32-timbre-01";
 const int   HTTP_TIMEOUT_MS = 5000; // Timeout corto: si el server no responde, no bloquear mucho
 
@@ -96,8 +103,14 @@ void notificarTimbre() {
     return; // El detector sigue funcionando aunque no se pueda avisar
   }
 
+  // Cliente TLS sin validación de certificado: mantiene esto simple para un
+  // proyecto hobby. SERVER_URL es HTTPS porque así lo exige el dominio de
+  // EasyPanel (ver nota junto a SERVER_URL).
+  WiFiClientSecure clienteSeguro;
+  clienteSeguro.setInsecure();
+
   HTTPClient http;
-  http.begin(SERVER_URL);
+  http.begin(clienteSeguro, SERVER_URL);
   http.addHeader("Content-Type", "application/json");
   http.setTimeout(HTTP_TIMEOUT_MS);
 
