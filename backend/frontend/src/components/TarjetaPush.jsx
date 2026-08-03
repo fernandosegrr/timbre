@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { obtenerVapidPublicKey, suscribirPush } from '../lib/api.js';
 
@@ -11,8 +11,40 @@ function convertirVapidKey(base64Url) {
 }
 
 export default function TarjetaPush() {
-  const [estado, setEstado] = useState('inactivo'); // inactivo | activando | activo | error
+  const [estado, setEstado] = useState('verificando'); // verificando | inactivo | activando | activo | error
   const [mensaje, setMensaje] = useState('');
+
+  useEffect(() => {
+    verificarSuscripcionExistente();
+  }, []);
+
+  // Al cargar la página no hay forma de saber si ya se activó antes más
+  // que preguntándole al navegador: el estado del botón vivía solo en
+  // memoria de React, así que cada recarga "olvidaba" que ya estaba
+  // activo y volvía a pedir activar. Esto lo deja fiel a la realidad.
+  async function verificarSuscripcionExistente() {
+    try {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        setEstado('inactivo');
+        return;
+      }
+
+      const registro = await navigator.serviceWorker.register('/service-worker.js');
+      const suscripcionExistente = await registro.pushManager.getSubscription();
+
+      if (suscripcionExistente) {
+        // Ya está suscrito en este navegador. Re-confirma en el servidor
+        // por si acaso (upsert por endpoint, no crea duplicados) para
+        // curar cualquier desincronía silenciosa.
+        await suscribirPush(suscripcionExistente).catch(() => {});
+        setEstado('activo');
+      } else {
+        setEstado('inactivo');
+      }
+    } catch {
+      setEstado('inactivo');
+    }
+  }
 
   async function activar() {
     setEstado('activando');
@@ -54,7 +86,7 @@ export default function TarjetaPush() {
       <motion.button
         className="boton-primario"
         onClick={activar}
-        disabled={estado === 'activando' || estado === 'activo'}
+        disabled={estado === 'activando' || estado === 'activo' || estado === 'verificando'}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -62,7 +94,9 @@ export default function TarjetaPush() {
           ? '✓ Notificaciones activadas'
           : estado === 'activando'
             ? 'Activando…'
-            : 'Activar notificaciones'}
+            : estado === 'verificando'
+              ? 'Verificando…'
+              : 'Activar notificaciones'}
       </motion.button>
       {mensaje && <p className="mensaje-error">{mensaje}</p>}
     </motion.section>

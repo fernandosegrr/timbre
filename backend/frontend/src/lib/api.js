@@ -3,28 +3,31 @@
 const CLAVE_AUTH = 'timbre_admin_auth';
 
 function headerAuth() {
-  const guardado = sessionStorage.getItem(CLAVE_AUTH);
+  const guardado = localStorage.getItem(CLAVE_AUTH);
   return guardado ? { Authorization: `Basic ${guardado}` } : {};
 }
 
 export function haySesion() {
-  return Boolean(sessionStorage.getItem(CLAVE_AUTH));
+  return Boolean(localStorage.getItem(CLAVE_AUTH));
 }
 
 export function cerrarSesion() {
-  sessionStorage.removeItem(CLAVE_AUTH);
+  localStorage.removeItem(CLAVE_AUTH);
 }
 
 // Valida usuario/password contra el backend (HTTP Basic Auth) y, si son
-// correctos, los guarda en sessionStorage para adjuntarlos en cada
-// petición posterior. Se pierden al cerrar la pestaña.
+// correctos, los guarda en localStorage para adjuntarlos en cada petición
+// posterior. A propósito NO usa sessionStorage: en un PWA/celular el
+// sistema operativo descarga la app en segundo plano todo el tiempo, y
+// sessionStorage se pierde con eso, cerrando la sesión sin avisar.
+// localStorage sobrevive hasta que se llame a cerrarSesion() explícitamente.
 export async function validarCredenciales(usuario, password) {
   const auth = btoa(`${usuario}:${password}`);
   const respuesta = await fetch('/api/auth/check', {
     headers: { Authorization: `Basic ${auth}` },
   });
   if (respuesta.ok) {
-    sessionStorage.setItem(CLAVE_AUTH, auth);
+    localStorage.setItem(CLAVE_AUTH, auth);
     return true;
   }
   return false;
